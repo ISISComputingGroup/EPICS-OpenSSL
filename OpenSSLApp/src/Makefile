@@ -23,18 +23,24 @@ OpenSSL_LIBS += $(EPICS_BASE_IOC_LIBS)
 # remove EPICS default of -w which nmake does not like
 override MAKEFLAGS=
 
+ifneq ($(findstring win32-x86,$(EPICS_HOST_ARCH)),)
+OPENSSL_ARCH=VC-WIN32
+else
+OPENSSL_ARCH=VC-WIN64A
+endif
 #===========================
 
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 
-# VC-WIN32   linux-elf --debug --release no-shared
+# linux-elf --debug --release no-shared
 #	--with-zlib-include
 #	--with-zlib-lib
 ifdef T_A
+ifneq ($(findstring windows,$(T_A)),)
 install:
-	$(PERL) $(TOP)/openssl-src/Configure VC-WIN64A no-asm zlib --prefix=$(abspath $(TOP)/install) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
+	$(PERL) $(TOP)/openssl-src/Configure $(OPENSSL_ARCH) no-asm zlib --prefix=$(abspath $(TOP)/install) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
 	nmake
 	nmake install
 	-$(MKDIR) $(TOP)/bin
@@ -46,5 +52,6 @@ install:
 	$(CP) -f $(TOP)/install/include/openssl/*.h* $(TOP)/include/openssl/
 	$(CP) -f $(TOP)/install/lib/*.lib $(TOP)/lib/$(T_A)/
 	$(CP) -f $(TOP)/install/bin/* $(TOP)/bin/$(T_A)/
+endif
 endif
 
