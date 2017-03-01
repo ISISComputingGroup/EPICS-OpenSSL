@@ -38,9 +38,9 @@ include $(TOP)/configure/RULES
 #	--with-zlib-include
 #	--with-zlib-lib
 ifdef T_A
-ifneq ($(findstring windows,$(T_A)),)
+ifeq ($(OS_CLASS),WIN32)
 install:
-	$(PERL) $(TOP)/openssl-src/Configure $(OPENSSL_ARCH) no-asm zlib --prefix=$(abspath $(TOP)/install) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
+	$(PERL) $(TOP)/openssl-src/Configure $(OPENSSL_ARCH) no-asm zlib --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
 	nmake
 	nmake install
 	-$(MKDIR) $(TOP)/bin
@@ -49,9 +49,9 @@ install:
 	-$(MKDIR) $(TOP)/lib/$(T_A)
 	-$(MKDIR) $(TOP)/include
 	-$(MKDIR) $(TOP)/include/openssl
-	$(CP) -f $(TOP)/install/include/openssl/*.h* $(TOP)/include/openssl/
-	$(CP) -f $(TOP)/install/lib/*.lib $(TOP)/lib/$(T_A)/
-	$(CP) -f $(TOP)/install/bin/* $(TOP)/bin/$(T_A)/
+	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
+	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
+	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
 endif
 endif
 
