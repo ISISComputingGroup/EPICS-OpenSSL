@@ -40,18 +40,7 @@ include $(TOP)/configure/RULES
 ifdef T_A
 ifeq ($(OS_CLASS),WIN32)
 install:
-	$(PERL) $(TOP)/openssl-src/Configure $(OPENSSL_ARCH) no-asm zlib --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
-	nmake
-	nmake install
-	-$(MKDIR) $(TOP)/bin
-	-$(MKDIR) $(TOP)/bin/$(T_A)
-	-$(MKDIR) $(TOP)/lib
-	-$(MKDIR) $(TOP)/lib/$(T_A)
-	-$(MKDIR) $(TOP)/include
-	-$(MKDIR) $(TOP)/include/openssl
-	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
-	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
-	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
-endif
-endif
+	$(MAKE) -C $(TOP)/openssl-src -f Makefile.epics install T_A=$(T_A) OPENSSL_ARCH=$(OPENSSL_ARCH) ZLIB=$(ZLIB)
 
+endif
+endif
