@@ -37,10 +37,15 @@ include $(TOP)/configure/RULES
 # linux-elf --debug --release no-shared
 #	--with-zlib-include
 #	--with-zlib-lib
-ifdef T_A
 ifeq ($(OS_CLASS),WIN32)
+ifdef T_A
+
 install:
-	$(MAKE) -C $(TOP)/openssl-src -f Makefile.epics install T_A=$(T_A) OPENSSL_ARCH=$(OPENSSL_ARCH) ZLIB=$(ZLIB)
+	$(MAKE) -C $(TOP)/openssl-src -f Make.epics install T_A=$(T_A) OPENSSL_ARCH=$(OPENSSL_ARCH)
 
 endif
 endif
+
+clean::
+	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean OPENSSL_ARCH=$(OPENSSL_ARCH)
+
