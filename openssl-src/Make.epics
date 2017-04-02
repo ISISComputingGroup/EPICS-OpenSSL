@@ -30,6 +30,7 @@ include $(TOP)/configure/RULES
 #	--with-zlib-include
 #	--with-zlib-lib
 # look at sepcifying shared and no-shared
+# copy to "MDd" etc. to help cmake find the libraries
 ifeq ($(OS_CLASS),WIN32)
 ifdef T_A
 install:
@@ -43,6 +44,10 @@ install:
 	-$(MKDIR) $(TOP)/lib/$(T_A)
 	-$(MKDIR) $(TOP)/include
 	-$(MKDIR) $(TOP)/include/openssl
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MD.lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MDd.lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MD.lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MDd.lib
 	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
 	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
 	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/

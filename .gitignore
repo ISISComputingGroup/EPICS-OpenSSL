@@ -13,3 +13,5 @@ runIOC.bat
 runIOC.sh
 relPaths.sh
 .project
+/openssl-src/Makefile
+/openssl-src/crypto/opensslconf.h
