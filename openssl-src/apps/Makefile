@@ -31,7 +31,7 @@ LIBSSL=-L.. -lssl
 
 PROGRAM= openssl
 
-SCRIPTS=CA.sh CA.pl tsget
+SCRIPTS=CA.sh CA.pl
 
 EXE= $(PROGRAM)$(EXE_EXT)
 

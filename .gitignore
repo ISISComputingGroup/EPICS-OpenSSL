@@ -15,3 +15,4 @@ relPaths.sh
 .project
 /openssl-src/Makefile
 /openssl-src/crypto/opensslconf.h
+/openssl-src/config

@@ -40,6 +40,7 @@ include $(TOP)/configure/RULES
 # we copy libraries to "MDd" etc. to help cmake find the libraries later
 ifdef T_A
 install:
+	$(CP) config.sh config
 	$(PERL) Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib no-krb5 --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
 ifeq ($(OS_CLASS),WIN32)
 	$(DO_MS)
