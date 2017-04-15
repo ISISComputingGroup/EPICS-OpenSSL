@@ -13,12 +13,19 @@ include $(TOP)/configure/CONFIG
 # remove EPICS default of -w which nmake does not like
 override MAKEFLAGS=
 
+ifeq ($(OS_CLASS),WIN32)
 ifneq ($(findstring win32-x86,$(EPICS_HOST_ARCH)),)
 OPENSSL_ARCH=VC-WIN32
 DO_MS=ms\do_ms
 else
 OPENSSL_ARCH=VC-WIN64A
 DO_MS=ms\do_win64a
+endif
+else
+OPENSSL_ARCH=linux-x86_64
+endif
+ifneq ($(findstring static,$(EPICS_HOST_ARCH)),)
+CONFIG_FLAGS += no-shared
 endif
 #===========================
 
@@ -30,27 +37,35 @@ include $(TOP)/configure/RULES
 #	--with-zlib-include
 #	--with-zlib-lib
 # look at sepcifying shared and no-shared
-# copy to "MDd" etc. to help cmake find the libraries
-ifeq ($(OS_CLASS),WIN32)
+# we copy libraries to "MDd" etc. to help cmake find the libraries later
 ifdef T_A
 install:
-	$(PERL) Configure $(OPENSSL_ARCH) no-asm zlib no-krb5 --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
+	$(PERL) Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib no-krb5 --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
+ifeq ($(OS_CLASS),WIN32)
 	$(DO_MS)
 	nmake -f ms/ntdll.mak OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
 	nmake -f ms/ntdll.mak install OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
+else
+	make
+	make install
+endif
 	-$(MKDIR) $(TOP)/bin
 	-$(MKDIR) $(TOP)/bin/$(T_A)
 	-$(MKDIR) $(TOP)/lib
 	-$(MKDIR) $(TOP)/lib/$(T_A)
 	-$(MKDIR) $(TOP)/include
 	-$(MKDIR) $(TOP)/include/openssl
+	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
+	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
+ifeq ($(OS_CLASS),WIN32)
 	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MD.lib
 	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MDd.lib
 	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MD.lib
 	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MDd.lib
-	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
 	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
-	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
+else
+	-$(CP) -f $(TOP)/install/$(T_A)/lib/*.a $(TOP)/lib/$(T_A)/
+	-$(CP) -f $(TOP)/install/$(T_A)/lib/*.so $(TOP)/lib/$(T_A)/
 endif
 endif
 

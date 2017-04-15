@@ -23,29 +23,19 @@ OpenSSL_LIBS += $(EPICS_BASE_IOC_LIBS)
 # remove EPICS default of -w which nmake does not like
 override MAKEFLAGS=
 
-ifneq ($(findstring win32-x86,$(EPICS_HOST_ARCH)),)
-OPENSSL_ARCH=VC-WIN32
-else
-OPENSSL_ARCH=VC-WIN64A
-endif
 #===========================
 
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 
-# linux-elf --debug --release no-shared
-#	--with-zlib-include
-#	--with-zlib-lib
-ifeq ($(OS_CLASS),WIN32)
 ifdef T_A
 
 install:
-	$(MAKE) -C $(TOP)/openssl-src -f Make.epics install T_A=$(T_A) OPENSSL_ARCH=$(OPENSSL_ARCH)
+	$(MAKE) -C $(TOP)/openssl-src -f Make.epics install T_A=$(T_A)
 
-endif
 endif
 
 clean::
-	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean OPENSSL_ARCH=$(OPENSSL_ARCH)
+	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean
 
