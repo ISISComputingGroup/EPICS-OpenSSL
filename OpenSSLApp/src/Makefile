@@ -37,10 +37,10 @@ install:
 endif
 
 ifeq ($(BASE_3_14),YES)
-clean::
-	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean
+clean:: myclean
 else
-clean:
-	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean
+clean: myclean
 endif
 
+myclean:
+	$(MAKE) -C $(TOP)/openssl-src -f Make.epics clean

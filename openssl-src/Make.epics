@@ -73,6 +73,12 @@ endif
 endif
 
 ifeq ($(findstring linux,$(EPICS_HOST_ARCH)),)
-clean::
-	nmake -f ms/ntdll.mak vclean OUT_D=out.$(EPICS_HOST_ARCH) TMP_D=tmp.$(EPICS_HOST_ARCH) INC_D=inc.$(EPICS_HOST_ARCH) INCO_D=inc.$(EPICS_HOST_ARCH)\openssl
+ifeq ($(BASE_3_14),YES)
+clean:: myclean
+else
+clean: myclean
 endif
+endif
+
+myclean:
+	nmake -f ms/ntdll.mak vclean OUT_D=out.$(EPICS_HOST_ARCH) TMP_D=tmp.$(EPICS_HOST_ARCH) INC_D=inc.$(EPICS_HOST_ARCH) INCO_D=inc.$(EPICS_HOST_ARCH)\openssl
