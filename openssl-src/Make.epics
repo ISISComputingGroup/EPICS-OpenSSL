@@ -24,8 +24,12 @@ endif
 else
 OPENSSL_ARCH=linux-x86_64
 endif
+
 ifneq ($(findstring static,$(EPICS_HOST_ARCH)),)
 CONFIG_FLAGS += no-shared
+NTFILE=nt
+else
+NTFILE=ntdll
 endif
 #===========================
 
@@ -46,8 +50,8 @@ endif
 	$(PERL) Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib no-krb5 --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
 ifeq ($(OS_CLASS),WIN32)
 	$(DO_MS)
-	nmake -f ms/ntdll.mak OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
-	nmake -f ms/ntdll.mak install OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
+	nmake -f ms/$(NTFILE).mak OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
+	nmake -f ms/$(NTFILE).mak install OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
 else
 	make
 	make install
@@ -81,4 +85,4 @@ endif
 endif
 
 myclean:
-	nmake -f ms/ntdll.mak vclean OUT_D=out.$(EPICS_HOST_ARCH) TMP_D=tmp.$(EPICS_HOST_ARCH) INC_D=inc.$(EPICS_HOST_ARCH) INCO_D=inc.$(EPICS_HOST_ARCH)\openssl
+	nmake -f ms/$(NTFILE).mak vclean OUT_D=out.$(EPICS_HOST_ARCH) TMP_D=tmp.$(EPICS_HOST_ARCH) INC_D=inc.$(EPICS_HOST_ARCH) INCO_D=inc.$(EPICS_HOST_ARCH)\openssl
