@@ -16,3 +16,4 @@ relPaths.sh
 /openssl-src/Makefile
 /openssl-src/crypto/opensslconf.h
 /openssl-src/config
+/openssl-src/configdata.pm

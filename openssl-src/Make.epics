@@ -16,10 +16,10 @@ override MAKEFLAGS=
 ifeq ($(OS_CLASS),WIN32)
 ifneq ($(findstring win32-x86,$(EPICS_HOST_ARCH)),)
 OPENSSL_ARCH=VC-WIN32
-DO_MS=ms\do_ms
+LIBARCH=32
 else
 OPENSSL_ARCH=VC-WIN64A
-DO_MS=ms\do_win64a
+LIBARCH=64
 endif
 else
 OPENSSL_ARCH=linux-x86_64
@@ -27,10 +27,14 @@ endif
 
 ifneq ($(findstring static,$(EPICS_HOST_ARCH)),)
 CONFIG_FLAGS += no-shared
-NTFILE=nt
 else
-NTFILE=ntdll
+LIBSFX=MD
 endif
+ifneq ($(findstring debug,$(EPICS_HOST_ARCH)),)
+CONFIG_FLAGS += --debug
+LIBSFX := $(LIBSFX)d
+endif
+
 #===========================
 
 include $(TOP)/configure/RULES
@@ -47,14 +51,14 @@ install:
 ifeq ($(OS_CLASS),Linux)
 	$(CP) config.sh config
 endif
-	$(PERL) Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib no-krb5 --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib
+	-$(MKDIR) O.$(T_A)
+	( cd O.$(T_A) && $(PERL) ../Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib )
 ifeq ($(OS_CLASS),WIN32)
-	$(DO_MS)
-	nmake -f ms/$(NTFILE).mak OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
-	nmake -f ms/$(NTFILE).mak install OUT_D=out.$(T_A) TMP_D=tmp.$(T_A) INC_D=inc.$(T_A) INCO_D=inc.$(T_A)\openssl
+	( cd O.$(T_A) && nmake )
+	( cd O.$(T_A) && nmake install )
 else
-	make
-	make install
+	( cd O.$(T_A) && make )
+	( cd O.$(T_A) && make install )
 endif
 	-$(MKDIR) $(TOP)/bin
 	-$(MKDIR) $(TOP)/bin/$(T_A)
@@ -65,11 +69,10 @@ endif
 	$(CP) -f $(TOP)/install/$(T_A)/include/openssl/*.h* $(TOP)/include/openssl/
 	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
 ifeq ($(OS_CLASS),WIN32)
-	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MD.lib
-	$(CP) -f $(TOP)/install/$(T_A)/lib/libeay32.lib $(TOP)/install/$(T_A)/lib/libeay32MDd.lib
-	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MD.lib
-	$(CP) -f $(TOP)/install/$(T_A)/lib/ssleay32.lib $(TOP)/install/$(T_A)/lib/ssleay32MDd.lib
 	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libcrypto.lib $(TOP)/lib/libcrypto$(LIBARCH)$(LIBSFX).lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libssl.lib $(TOP)/lib/libssl$(LIBARCH)$(LIBSFX).lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/engines-1_1/* $(TOP)/bin/$(T_A)/
 else
 	-$(CP) -f $(TOP)/install/$(T_A)/lib/*.a $(TOP)/lib/$(T_A)/
 	-$(CP) -f $(TOP)/install/$(T_A)/lib/*.so $(TOP)/lib/$(T_A)/
@@ -85,4 +88,4 @@ endif
 endif
 
 myclean:
-	nmake -f ms/$(NTFILE).mak vclean OUT_D=out.$(EPICS_HOST_ARCH) TMP_D=tmp.$(EPICS_HOST_ARCH) INC_D=inc.$(EPICS_HOST_ARCH) INCO_D=inc.$(EPICS_HOST_ARCH)\openssl
+	-$(RM) O.$(EPICS_HOST_ARCH)
