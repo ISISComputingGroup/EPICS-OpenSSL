@@ -70,8 +70,8 @@ endif
 	$(CP) -f $(TOP)/install/$(T_A)/bin/* $(TOP)/bin/$(T_A)/
 ifeq ($(OS_CLASS),WIN32)
 	$(CP) -f $(TOP)/install/$(T_A)/lib/*.lib $(TOP)/lib/$(T_A)/
-	$(CP) -f $(TOP)/install/$(T_A)/lib/libcrypto.lib $(TOP)/lib/libcrypto$(LIBARCH)$(LIBSFX).lib
-	$(CP) -f $(TOP)/install/$(T_A)/lib/libssl.lib $(TOP)/lib/libssl$(LIBARCH)$(LIBSFX).lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libcrypto.lib $(TOP)/lib/$(T_A)/libcrypto$(LIBARCH)$(LIBSFX).lib
+	$(CP) -f $(TOP)/install/$(T_A)/lib/libssl.lib $(TOP)/lib/$(T_A)/libssl$(LIBARCH)$(LIBSFX).lib
 	$(CP) -f $(TOP)/install/$(T_A)/lib/engines-1_1/* $(TOP)/bin/$(T_A)/
 else
 	-$(CP) -f $(TOP)/install/$(T_A)/lib/*.a $(TOP)/lib/$(T_A)/
