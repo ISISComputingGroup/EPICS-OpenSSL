@@ -27,6 +27,7 @@ endif
 
 ifneq ($(findstring static,$(EPICS_HOST_ARCH)),)
 CONFIG_FLAGS += no-shared
+LIBSFX=MT
 else
 LIBSFX=MD
 endif
