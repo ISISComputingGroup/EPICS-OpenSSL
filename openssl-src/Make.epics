@@ -30,6 +30,9 @@ CONFIG_FLAGS += no-shared
 LIBSFX=MT
 else
 LIBSFX=MD
+# we install zlib so OpenSSL.exe can work if called directly without zlib in PATH
+# not strictly needed for epics, but convenient
+BIN_INSTALLS_WIN32 += $(ZLIB)/bin/$(EPICS_HOST_ARCH)/*.dll
 endif
 ifneq ($(findstring debug,$(EPICS_HOST_ARCH)),)
 CONFIG_FLAGS += --debug
