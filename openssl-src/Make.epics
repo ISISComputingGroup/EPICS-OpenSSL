@@ -39,6 +39,11 @@ CONFIG_FLAGS += --debug
 LIBSFX := $(LIBSFX)d
 endif
 
+# we avoid the install target as it include install_docs that takes time
+# and is not needed 
+NMAKE_BUILD_TARGETS=build_sw
+NMAKE_INSTALL_TARGETS=install_sw install_ssldirs
+
 #===========================
 
 include $(TOP)/configure/RULES
@@ -58,11 +63,11 @@ endif
 	-$(MKDIR) O.$(T_A)
 	( cd O.$(T_A) && $(PERL) ../Configure $(OPENSSL_ARCH) $(CONFIG_FLAGS) no-asm zlib --prefix=$(abspath $(TOP)/install/$(T_A)) --openssldir=$(abspath $(TOP)/install/conf) --with-zlib-include=$(ZLIB)/include --with-zlib-lib=$(ZLIB)/lib/$(T_A)/zlib.lib )
 ifeq ($(OS_CLASS),WIN32)
-	( cd O.$(T_A) && nmake )
-	( cd O.$(T_A) && nmake install )
+	( cd O.$(T_A) && nmake $(NMAKE_BUILD_TARGETS) )
+	( cd O.$(T_A) && nmake $(NMAKE_INSTALL_TARGETS) )
 else
-	( cd O.$(T_A) && make )
-	( cd O.$(T_A) && make install )
+	( cd O.$(T_A) && make $(NMAKE_BUILD_TARGETS) )
+	( cd O.$(T_A) && make $(NMAKE_INSTALL_TARGETS) )
 endif
 	-$(MKDIR) $(TOP)/bin
 	-$(MKDIR) $(TOP)/bin/$(T_A)
